@@ -3,13 +3,13 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 //REDUX SETUp
-import { createStore, applyMiddleware,compose } from "redux";
+import { createStore, applyMiddleware, compose } from "redux";
 import rootReducer from "./reducers";
-import {Provider} from 'react-redux'
-import thunk from 'redux-thunk'
+import { Provider } from "react-redux";
+import thunk from "redux-thunk";
+import { BrowserRouter } from "react-router-dom";
 
 const composeEnchancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-console.log(process.env.REACT_APP_GAMES)
 
 const store = createStore(
   rootReducer,
@@ -19,7 +19,9 @@ const store = createStore(
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>,
   document.getElementById("root")
