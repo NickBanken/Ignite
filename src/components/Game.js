@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { smallImage } from "../util";
 
 import missingImage from "../img/missing-image.png";
+import { popUp } from "../animations";
 
 const Game = ({ name, released, image, id, screenshots }) => {
   const stringPathId = id.toString();
@@ -18,7 +19,13 @@ const Game = ({ name, released, image, id, screenshots }) => {
   };
 
   return (
-    <StyledGame layoutId={stringPathId} onClick={loadDetailHandler}>
+    <StyledGame
+      variants={popUp}
+      initial="hidden"
+      animate="show"
+      layoutId={stringPathId}
+      onClick={loadDetailHandler}
+    >
       <Link to={`/game/${id}`}>
         <motion.h3 layoutId={`title ${stringPathId}`}>{name}</motion.h3>
         <p>{released}</p>
