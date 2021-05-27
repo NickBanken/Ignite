@@ -15,3 +15,9 @@ export const loadDetail = (id, screenshots) => async (dispatch) => {
     },
   });
 };
+
+export const disableShow = () => async (dispatch) => {
+  dispatch({
+    type: "NOT_DISPLAYING",
+  });
+};

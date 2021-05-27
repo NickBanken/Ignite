@@ -3,7 +3,7 @@ import GameDetail from "../components/GameDetail";
 import { useDispatch, useSelector } from "react-redux";
 import { loadGames } from "../actions/gamesAction";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, AnimateSharedLayout } from "framer-motion";
 //Components
 import Game from "../components/Game";
 import { useLocation } from "react-router-dom";
@@ -18,55 +18,81 @@ const Home = () => {
     dispatch(loadGames());
   }, [dispatch]);
   //Get data back
-  const { popular, newGames, upcoming } = useSelector((state) => state.games);
+  const { popular, newGames, upcoming, searched } = useSelector(
+    (state) => state.games
+  );
   return (
     <GameList>
-      {pathId && <GameDetail />}
-      <h2>Upcoming Games</h2>
-      <Games>
-        {upcoming.map((game) => {
-          return (
-            <Game
-              name={game.name}
-              released={game.released}
-              id={game.id}
-              image={game.background_image}
-              screenshots={game.short_screenshots}
-              key={game.id}
-            ></Game>
-          );
-        })}
-      </Games>
-      <h2>Popular Games</h2>
-      <Games>
-        {popular.map((game) => {
-          return (
-            <Game
-              name={game.name}
-              released={game.released}
-              id={game.id}
-              image={game.background_image}
-              screenshots={game.short_screenshots}
-              key={game.id}
-            ></Game>
-          );
-        })}
-      </Games>
-      <h2>New Games</h2>
-      <Games>
-        {newGames.map((game) => {
-          return (
-            <Game
-              name={game.name}
-              released={game.released}
-              id={game.id}
-              image={game.background_image}
-              screenshots={game.short_screenshots}
-              key={game.id}
-            ></Game>
-          );
-        })}
-      </Games>
+      <AnimateSharedLayout type="crossfade">
+        <AnimatePresence>
+          {pathId && <GameDetail pathId={pathId} />}
+        </AnimatePresence>
+
+        {searched.length > 0 && (
+          <>
+            <h2>Searched Games</h2>
+            <Games>
+              {searched.map((game) => {
+                return (
+                  <Game
+                    name={game.name}
+                    released={game.released}
+                    id={game.id}
+                    image={game.background_image}
+                    screenshots={game.short_screenshots}
+                    key={game.id}
+                  ></Game>
+                );
+              })}
+            </Games>
+          </>
+        )}
+        <h2>Upcoming Games</h2>
+        <Games>
+          {upcoming.map((game) => {
+            return (
+              <Game
+                name={game.name}
+                released={game.released}
+                id={game.id}
+                image={game.background_image}
+                screenshots={game.short_screenshots}
+                key={game.id}
+              ></Game>
+            );
+          })}
+        </Games>
+        <h2>Popular Games</h2>
+        <Games>
+          {popular.map((game) => {
+            return (
+              <Game
+                name={game.name}
+                released={game.released}
+                id={game.id}
+                image={game.background_image}
+                screenshots={game.short_screenshots}
+                key={game.id}
+              ></Game>
+            );
+          })}
+        </Games>
+        <h2>New Games</h2>
+        <Games>
+          {newGames.map((game) => {
+            return (
+              <Game
+                name={game.name}
+                released={game.released}
+                id={game.id}
+                image={game.background_image}
+                screenshots={game.short_screenshots}
+                key={game.id}
+              ></Game>
+            );
+          })}
+        </Games>
+      </AnimateSharedLayout>
     </GameList>
   );
 };

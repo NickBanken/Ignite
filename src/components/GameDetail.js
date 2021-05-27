@@ -2,48 +2,146 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
 // Redux
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { smallImage } from "../util";
 
-const GameDetail = () => {
-  const { game, screen, isLoading } = useSelector((state) => state.detail);
+import { disableShow } from "../actions/detailAction";
+
+//Images
+import playstation from "../img/playstation.svg";
+import steam from "../img/steam.svg";
+import xbox from "../img/xbox.svg";
+import nitendo from "../img/nintendo.svg";
+import apple from "../img/apple.svg";
+import gamepad from "../img/gamepad.svg";
+
+//Stars
+import starEmpty from "../img/star-empty.png";
+import starFull from "../img/star-full.png";
+
+import missingImage from "../img/missing-image.png";
+
+const GameDetail = ({ pathId }) => {
+  const dispatch = useDispatch();
+
+  const history = useHistory();
+  console.log(pathId);
+  // Exit Detail
+  const exitDetailHandler = (e) => {
+    const element = e.target;
+    if (element.classList.contains("shadow")) {
+      dispatch(disableShow());
+      console.log("w");
+      document.body.style.overflow = "auto";
+      history.push("/");
+      console.log(history.location.pathname);
+    }
+  };
+
+  //Get stars
+  const getStars = () => {
+    const stars = [];
+    const rating = Math.floor(game.rating);
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.push(<img alt="star" key={i} src={starFull}></img>);
+      } else {
+        stars.push(<img alt="starEmpty" key={i} src={starEmpty}></img>);
+      }
+    }
+    return stars;
+  };
+
+  //GET PLATFORM IMAGES
+  const getPlatform = (platform) => {
+    switch (platform) {
+      case "PlayStation 4":
+        return playstation;
+      case "Xbox One":
+        return xbox;
+      case "PC":
+        return steam;
+      case "Nintendo Switch":
+        return nitendo;
+      case "IOS":
+        return apple;
+      default:
+        return gamepad;
+    }
+  };
+
+  //Data
+  const { game, screen, isLoading, showing } = useSelector(
+    (state) => state.detail
+  );
+  if (!isLoading && showing) {
+    document.body.style.overflow = "hidden";
+  }
   return (
     <>
       {!isLoading && (
         <>
           {game && (
-            <CardShadow>
-              <Detail>
+            <CardShadow
+              active={showing}
+              className="shadow"
+              onClick={exitDetailHandler}
+            >
+              <Detail layoutId={pathId}>
                 <Stats>
                   <div className="rating">
-                    <h3>{game.name}</h3>
-                    <p>Rating: {game.rating}</p>
+                    <motion.h3 layoutId={`title ${pathId}`}>
+                      {game.name}
+                    </motion.h3>
+                    <p>Rating: {game.rating}</p> {getStars(game.rating)}
                   </div>
                   <Info>
                     <h3>Platforms</h3>
                     <Platforms>
                       {game.platforms.map((data) => (
-                        <h3 key={data.platform.id}>{data.platform.name}</h3>
+                        <>
+                          <img
+                            key={data.platform.id}
+                            src={getPlatform(data.platform.name)}
+                            alt={data.platform.name}
+                          ></img>
+                        </>
                       ))}
                     </Platforms>
                   </Info>
                 </Stats>
                 <Media>
-                  <img src={game.background_image} alt="background-images" />
+                  {game.background_image ? (
+                    <motion.img
+                      layoutId={`image ${pathId}`}
+                      src={smallImage(game.background_image, 1280)}
+                      alt="background-images"
+                    />
+                  ) : (
+                    <motion.img
+                      layoutId={`image ${pathId}`}
+                      src={missingImage}
+                      alt="background-images"
+                    />
+                  )}
                 </Media>
                 <Description>
                   <p>{game.description_raw}</p>
                 </Description>
-                <div className="gallery">
-                  {screen.slice(1).map((screenshot) => {
-                    return (
-                      <img
-                        key={screenshot.id}
-                        src={screenshot.image}
-                        alt="game screenshot"
-                      />
-                    );
-                  })}
-                </div>
+                {screen.length > 0 && (
+                  <div className="gallery">
+                    {screen.slice(1).map((screenshot) => {
+                      return (
+                        <img
+                          key={screenshot.id}
+                          src={smallImage(screenshot.image, 1280)}
+                          alt="game screenshot"
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </Detail>
             </CardShadow>
           )}
@@ -61,6 +159,14 @@ const CardShadow = styled(motion.div)`
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 5;
+  transition: background ease 0.5s;
+  ${({ active }) =>
+    !active &&
+    `
+    background: rgba(0, 0, 0, 0);
+  `}
+
   &::-webkit-scrollbar {
     width: 0.5rem;
   }
@@ -82,6 +188,8 @@ const Detail = styled(motion.div)`
   position: absolute;
   left: 10%;
   color: black;
+  z-index: 10;
+
   img {
     width: 100%;
   }
@@ -91,6 +199,12 @@ const Stats = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  img {
+    width: 2rem;
+    height: 2rem;
+    display: inline;
+  }
 `;
 
 const Info = styled(motion.div)`
